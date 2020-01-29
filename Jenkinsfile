@@ -32,19 +32,30 @@ pipeline {
 }
 
 def buildApp() {
-	//dir ('/section_4/code/cd_pipeline' ) {
-		def appImage = docker.build("fcastaneda/dockerapp:lastest")//${BUILD_NUMBER}
-	//}
+	def appImage = docker.build("fcastaneda/dockerapp:lastest")//${BUILD_NUMBER}
 }
 
 
-def deploy(environment) {
-  dir('k8s')
+def deploy(env) {
+  if("${env}" == 'dev')
   {
-  	bat 'ibmcloud update -f'
-  	bat 'ibmcloud login --apikey @C:\\Users\\FRANCISCOJAVIERCASTA\\Documents\\apikey.json -r us-south'
-  	bat 'kubectl -n ${environment} apply -f flask.yaml'
-  	bat 'kubectl -n ${environment} get all'
+    dir('k8s')
+    {
+    	bat 'ibmcloud update -f'
+    	bat 'ibmcloud login --apikey @C:\\Users\\FRANCISCOJAVIERCASTA\\Documents\\apikey.json -r us-south'
+    	bat 'kubectl -n dev apply -f flask.yaml'
+    	bat 'kubectl -n dev get all'
+    }
+  }
+  if("${env}" == 'live')
+  {
+    dir('k8s')
+    {
+    	bat 'ibmcloud update -f'
+    	bat 'ibmcloud login --apikey @C:\\Users\\FRANCISCOJAVIERCASTA\\Documents\\apikey.json -r us-south'
+    	bat 'kubectl -n live apply -f flask.yaml'
+    	bat 'kubectl -n live get all'
+    }
   }
 }
 
@@ -54,5 +65,4 @@ def approve() {
 	timeout(time:1, unit:'DAYS') {
 		input('Do you want to deploy to live?')
 	}
-
 }
