@@ -33,7 +33,7 @@ pipeline {
 
 def buildApp() {
 	def appImage = docker.build("fcastaneda/dockerapp:lastest")//${BUILD_NUMBER}
-  appImage.push("fcastaneda/dockerapp:lastest")
+  appImage.push("lastest")
 }
 
 
