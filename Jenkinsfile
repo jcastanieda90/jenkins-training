@@ -33,6 +33,7 @@ pipeline {
 
 def buildApp() {
 	def appImage = docker.build("fcastaneda/dockerapp:lastest")//${BUILD_NUMBER}
+  appImage.push("fcastaneda/dockerapp:lastest")
 }
 
 
@@ -47,7 +48,7 @@ def deploy(env) {
     	bat 'kubectl -n dev get all'
     }
   }
-  if("${env}" == 'live')
+  else if("${env}" == 'live')
   {
     dir('k8s')
     {
