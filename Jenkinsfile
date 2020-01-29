@@ -1,5 +1,5 @@
 #!groovy
-//hola javi
+
 pipeline {
     agent any
 
@@ -42,7 +42,7 @@ def deploy(environment) {
   dir('k8s')
   {
   	bat 'ibmcloud update -f'
-  	bat 'ibmcloud login --apikey 6BCmBCFGqE6ieeWnNwN6IxvBBOvHxMd41QhjDBu2lRRm -r us-south'
+  	bat 'ibmcloud login --apikey @C:\\Users\\FRANCISCOJAVIERCASTA\\Documents\\apikey.json -r us-south'
   	bat 'kubectl -n ${environment} apply -f flask.yaml'
   	bat 'kubectl -n ${environment} get all'
   }
