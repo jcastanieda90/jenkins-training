@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: myapp
-        image: jcdemo/flaskapp
+        image: fcastaneda/dockerapp
         ports:
         - containerPort: 5000
 ---
