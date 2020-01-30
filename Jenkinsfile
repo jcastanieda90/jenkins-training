@@ -52,8 +52,8 @@ pipeline {
 
 def buildApp() {
 
-	def appImage = docker.build("fcastaneda/dockerapp:lastest")//${BUILD_NUMBER}
-  appImage.push("lastest")
+	def appImage = docker.build("fcastaneda/dockerapp:lst")//${BUILD_NUMBER}
+  appImage.push("lst")
 }
 
 
