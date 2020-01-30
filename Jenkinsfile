@@ -24,8 +24,9 @@ pipeline {
     stage('Slack Message') {
         steps {
             slackSend channel: '#jenkins-dsg',
-                color: '#FFFF00',
-                message: "*${currentBuild.currentResult}:* @here Deployment to production environment muts be approved by @fcastaneda ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}"
+                //color: '#FFFF00',
+                color: 'danger',
+                message: "*${currentBuild.currentResult}:* @here Deployment to production environment muts be approved by @fcastaneda\n ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}"
 
         }
     }
@@ -72,7 +73,7 @@ def deploy(env) {
   catch (Exception e)
   {
     slackSend channel: '#jenkins-dsg',
-        color: '#danger',
+        color: 'danger',
         message: "*${currentBuild.currentResult}:* @here Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}"
   }
   }
@@ -94,7 +95,7 @@ def deploy(env) {
     catch (Exception e)
     {
       slackSend channel: '#jenkins-dsg',
-          color: '#danger',
+          color: 'danger',
           message: "*${currentBuild.currentResult}:* @here Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}"
     }
   }
