@@ -1,47 +1,14 @@
-def COLOR_MAP = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
-def getBuildUser() {
-    return currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
-}
 pipeline {
-    environment {
-        //This variable need be tested as string
-        doError = '0'
-        BUILD_USER = ''
-    }
-
     agent any
 
     stages {
-        stage('Error') {
-            when {
-                expression { doError == '1' }
-            }
+        stage('Slack Message') {
             steps {
-                echo "Failure"
-                error "failure test. It's work"
-            }
-        }
+                slackSend channel: '#jenkins',
+                    color: 'good',
+                    message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}"
 
-        stage('Success') {
-            when {
-                expression { doError == '0' }
             }
-            steps {
-                echo "ok"
-            }
-        }
-    }
-	post {
-        always {
-            script {
-                BUILD_USER = getBuildUser()
-            }
-            echo 'I will always say Hello again!'
-
-            slackSend channel: '#jenkins-dsg',
-                color: COLOR_MAP[currentBuild.currentResult],
-                message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} by ${BUILD_USER}\n More info at: ${env.BUILD_URL}"
-
         }
     }
 }
