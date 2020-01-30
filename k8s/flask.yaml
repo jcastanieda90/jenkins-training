@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: myapp
-        image: fcastaneda/dockerapp:lastest
+        image: fcastaneda/dockerapp:lst
         ports:
         - containerPort: 5000
 ---
