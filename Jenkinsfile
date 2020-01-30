@@ -25,7 +25,7 @@ pipeline {
         steps {
             slackSend channel: '#jenkins-dsg',
                 color: '#FFFF00',
-                message: "*${currentBuild.currentResult}:* @here Deploy to prod muts be approved by @fcastaneda ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}"
+                message: "*${currentBuild.currentResult}:* @here Deployment to production environment muts be approved by @fcastaneda ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}"
 
         }
     }
@@ -42,14 +42,25 @@ pipeline {
 }
 
 def buildApp() {
-	def appImage = docker.build("fcastaneda/dockerapp:lastest")//${BUILD_NUMBER}
-  appImage.push("lastest")
+  try
+  {
+	   def appImage = docker.build("fcastaneda/dockerapp:lastest")//${BUILD_NUMBER}
+     appImage.push("lastest")
+  }
+  catch (Exception e)
+  {
+    slackSend channel: '#jenkins-dsg',
+        color: '#danger',
+        message: "*${currentBuild.currentResult}:* @here Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}"
+  }
 }
 
 
 def deploy(env) {
   if("${env}" == 'dev')
   {
+    try
+    {
     dir('k8s')
     {
     	bat 'ibmcloud update -f'
@@ -58,14 +69,33 @@ def deploy(env) {
     	bat 'kubectl -n dev get all'
     }
   }
+  catch (Exception e)
+  {
+    slackSend channel: '#jenkins-dsg',
+        color: '#danger',
+        message: "*${currentBuild.currentResult}:* @here Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}"
+  }
+  }
   else if("${env}" == 'live')
   {
-    dir('k8s')
+    try
     {
-    	bat 'ibmcloud update -f'
-    	bat 'ibmcloud login --apikey @C:\\Users\\FRANCISCOJAVIERCASTA\\Documents\\apikey.json -r us-south'
-    	bat 'kubectl -n live apply -f flask.yaml'
-    	bat 'kubectl -n live get all'
+      dir('k8s')
+      {
+      	bat 'ibmcloud update -f'
+      	bat 'ibmcloud login --apikey @C:\\Users\\FRANCISCOJAVIERCASTA\\Documents\\apikey.json -r us-south'
+      	bat 'kubectl -n live apply -f flask.yaml'
+      	bat 'kubectl -n live get all'
+        slackSend channel: '#jenkins-dsg',
+        color: 'good',
+        message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}"
+      }
+    }
+    catch (Exception e)
+    {
+      slackSend channel: '#jenkins-dsg',
+          color: '#danger',
+          message: "*${currentBuild.currentResult}:* @here Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}"
     }
   }
 }
