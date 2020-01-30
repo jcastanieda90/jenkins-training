@@ -38,7 +38,7 @@ pipeline {
             steps { deploy('live') }
 		}
 
-    stage('Slack Message') {
+    stage('Slack Notification') {
         steps {
           slackSend channel: '#jenkins-dsg',
           color: 'good',
