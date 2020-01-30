@@ -21,6 +21,15 @@ pipeline {
             steps { deploy('dev') }
 		}
 
+    stage('Slack Message') {
+        steps {
+            slackSend channel: '#jenkins-dsg',
+                color: '#FFFF00',
+                message: "*${currentBuild.currentResult}:* @here Deploy to prod muts be approved by @fcastaneda ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}"
+
+        }
+    }
+
         stage("Approve") {
             steps { approve() }
 		}
@@ -28,7 +37,8 @@ pipeline {
         stage("Deploy - Live") {
             steps { deploy('live') }
 		}
-	}
+
+	  }
 }
 
 def buildApp() {
